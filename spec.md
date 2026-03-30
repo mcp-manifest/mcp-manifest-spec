@@ -1,7 +1,7 @@
 # mcp-manifest.json Specification v0.1
 
 **Status:** Draft
-**Author:** IronServices
+**Author:** David H Friedel Jr
 **Date:** 2026-03-29
 
 ## Abstract
