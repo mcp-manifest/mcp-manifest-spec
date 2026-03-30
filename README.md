@@ -1,4 +1,4 @@
-# mcp-manifest.dev
+# mcp-manifest specification
 
 A machine-readable manifest format for [MCP](https://modelcontextprotocol.io) servers — enabling autodiscovery, one-click installation, and zero-config client setup.
 
