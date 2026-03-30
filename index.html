@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mcp-manifest.dev — Autodiscovery for MCP Servers</title>
+  <meta name="description" content="A machine-readable manifest format for MCP servers. Enable autodiscovery, one-click installation, and zero-config client setup.">
+  <link rel="mcp-manifest" type="application/json" href="/.well-known/mcp-manifest.json">
+  <style>
+    :root {
+      --bg: #fafafa;
+      --fg: #111;
+      --muted: #666;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --border: #e5e7eb;
+      --code-bg: #f3f4f6;
+      --green: #059669;
+      --purple: #7c3aed;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --fg: #f1f5f9;
+        --muted: #94a3b8;
+        --accent: #60a5fa;
+        --accent-light: #1e293b;
+        --border: #334155;
+        --code-bg: #1e293b;
+        --green: #34d399;
+        --purple: #a78bfa;
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.7;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+    h1 { font-size: 2.5em; margin-bottom: 8px; letter-spacing: -0.02em; }
+    h1 code { color: var(--accent); font-size: 0.85em; background: none; padding: 0; }
+    .subtitle { font-size: 1.2em; color: var(--muted); margin-bottom: 48px; }
+    h2 { font-size: 1.4em; margin: 48px 0 16px; }
+    p { margin-bottom: 16px; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    pre {
+      background: var(--code-bg);
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--border);
+    }
+    pre code { background: none; padding: 0; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--accent-light);
+    }
+    .card h3 { font-size: 1.1em; margin-bottom: 8px; }
+    .card p { font-size: 0.9em; color: var(--muted); margin: 0; }
+    .step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+    .step-num {
+      background: var(--accent);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .highlight { color: var(--accent); font-weight: 600; }
+    .tag {
+      display: inline-block;
+      font-size: 0.75em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .tag-green { background: #d1fae5; color: #065f46; }
+    .tag-purple { background: #ede9fe; color: #5b21b6; }
+    @media (prefers-color-scheme: dark) {
+      .tag-green { background: #064e3b; color: #6ee7b7; }
+      .tag-purple { background: #3b0764; color: #c4b5fd; }
+    }
+    footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9em;
+    }
+    .flow { text-align: center; padding: 32px 0; font-size: 1.1em; }
+    .flow .arrow { color: var(--muted); margin: 0 4px; }
+    .flow .domain { color: var(--accent); font-weight: 600; }
+    .flow .result { color: var(--green); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <h1><code>mcp-manifest.json</code></h1>
+  <p class="subtitle">Autodiscovery and zero-config installation for MCP servers.</p>
+
+  <div class="flow">
+    <span class="domain">ironlicensing.com</span>
+    <span class="arrow">&rarr;</span>
+    manifest discovered
+    <span class="arrow">&rarr;</span>
+    tool installed
+    <span class="arrow">&rarr;</span>
+    <span class="result">connected</span>
+  </div>
+
+  <h2>The Problem</h2>
+  <p>
+    Every MCP server is a snowflake installation. The protocol defines the handshake <em>after</em> connection,
+    but says nothing about how to install, configure, or wire the client. Every README has a different JSON blob to copy-paste.
+  </p>
+
+  <h2>The Fix</h2>
+  <p>
+    Ship an <code>mcp-manifest.json</code> with your server. Enable autodiscovery with one line of HTML.
+    Any MCP client can then set up your server from just a domain name.
+  </p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Autodiscovery</h3>
+      <p>Like RSS feeds. Add a <code>&lt;link&gt;</code> tag or serve at <code>/.well-known/</code>. Clients find it automatically.</p>
+    </div>
+    <div class="card">
+      <h3>Any Runtime</h3>
+      <p>npm, pip, dotnet, cargo, Docker, binary. The manifest declares how to install — clients pick the right method.</p>
+    </div>
+    <div class="card">
+      <h3>Typed Config</h3>
+      <p>API keys, paths, URLs — each typed so clients show the right UI. Secrets get masked automatically.</p>
+    </div>
+  </div>
+
+  <h2>How It Works</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Server author</strong> adds <code>mcp-manifest.json</code> to their repo and website
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>User</strong> types a domain name into their MCP client
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <strong>Client</strong> discovers the manifest, installs the tool, prompts for config, writes settings
+    </div>
+  </div>
+
+  <h2>Enable Autodiscovery</h2>
+
+  <p><span class="tag tag-green">HTML</span> Add to your <code>&lt;head&gt;</code>:</p>
+  <pre><code>&lt;link rel="mcp-manifest" type="application/json" href="/mcp-manifest.json" /&gt;</code></pre>
+
+  <p><span class="tag tag-purple">API</span> Or serve at a well-known URL:</p>
+  <pre><code>GET https://your-site.com/.well-known/mcp-manifest.json</code></pre>
+
+  <h2>Minimal Manifest</h2>
+  <pre><code>{
+  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
+  "version": "0.1",
+  "server": {
+    "name": "my-server",
+    "displayName": "My Server",
+    "description": "What it does",
+    "version": "1.0.0"
+  },
+  "install": [{
+    "method": "npm",
+    "package": "my-mcp-server",
+    "command": "my-mcp-server",
+    "priority": 0
+  }],
+  "transport": "stdio"
+}</code></pre>
+
+  <h2>Resources</h2>
+  <div class="cards">
+    <div class="card">
+      <h3><a href="https://git.marketally.com/mcp-manifest/spec/src/branch/main/spec.md">Full Spec</a></h3>
+      <p>Complete specification with autodiscovery, config types, resolution algorithm.</p>
+    </div>
+    <div class="card">
+      <h3><a href="https://git.marketally.com/mcp-manifest/spec/src/branch/main/schema/v0.1.json">JSON Schema</a></h3>
+      <p>Validate your manifest with <code>$schema</code> reference.</p>
+    </div>
+    <div class="card">
+      <h3><a href="https://git.marketally.com/mcp-manifest/spec/src/branch/main/examples/">Examples</a></h3>
+      <p>Reference manifests: minimal, SQLite, GitHub, IronLicensing.</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <strong>v0.1 Draft</strong> &middot;
+      <a href="https://git.marketally.com/mcp-manifest/spec">Source</a> &middot;
+      CC0 1.0 Public Domain
+    </p>
+  </footer>
+
+</body>
+</html>

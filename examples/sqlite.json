@@ -1,0 +1,43 @@
+{
+  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
+  "version": "0.1",
+  "server": {
+    "name": "sqlite",
+    "displayName": "SQLite Explorer",
+    "description": "Query and explore SQLite databases",
+    "version": "0.5.0",
+    "author": "Anthropic",
+    "repository": "https://github.com/anthropics/mcp-servers",
+    "license": "MIT",
+    "keywords": ["database", "sqlite", "sql", "query"]
+  },
+  "install": [
+    {
+      "method": "npm",
+      "package": "@anthropic/mcp-server-sqlite",
+      "command": "mcp-server-sqlite",
+      "priority": 0
+    },
+    {
+      "method": "pip",
+      "package": "mcp-server-sqlite",
+      "command": "mcp-server-sqlite",
+      "priority": 1
+    }
+  ],
+  "transport": "stdio",
+  "config": [
+    {
+      "key": "db-path",
+      "description": "Path to SQLite database file",
+      "type": "path",
+      "required": true,
+      "prompt": "Database file path"
+    }
+  ],
+  "scopes": ["project"],
+  "settings_template": {
+    "command": "mcp-server-sqlite",
+    "args": ["${db-path}"]
+  }
+}

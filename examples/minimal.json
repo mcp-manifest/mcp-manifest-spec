@@ -1,0 +1,19 @@
+{
+  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
+  "version": "0.1",
+  "server": {
+    "name": "my-server",
+    "displayName": "My MCP Server",
+    "description": "A minimal example manifest",
+    "version": "1.0.0"
+  },
+  "install": [
+    {
+      "method": "npm",
+      "package": "my-mcp-server",
+      "command": "my-mcp-server",
+      "priority": 0
+    }
+  ],
+  "transport": "stdio"
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://mcp-manifest.org/schema/v0.1.json",
+  "version": "0.1",
+  "server": {
+    "name": "ironlicensing",
+    "displayName": "IronLicensing",
+    "description": "Manage IronLicensing products, tiers, features, licenses, and analytics via AI assistants",
+    "version": "1.0.0",
+    "author": "IronServices",
+    "homepage": "https://www.ironlicensing.com",
+    "repository": "https://git.marketally.com/IronServices/ironlicensing-mcp",
+    "license": "MIT",
+    "keywords": ["licensing", "saas", "product-management", "analytics", "tiers", "features"]
+  },
+  "install": [
+    {
+      "method": "dotnet-tool",
+      "package": "IronLicensing.Mcp",
+      "source": "https://git.marketally.com/api/packages/ironservices/nuget/index.json",
+      "command": "ironlicensing-mcp",
+      "priority": 0
+    }
+  ],
+  "transport": "stdio",
+  "config": [
+    {
+      "key": "profile",
+      "description": "Named account profile from ~/.ironlicensing/config.json",
+      "type": "string",
+      "required": false,
+      "arg": "--profile",
+      "prompt": "Account profile (leave empty for default)"
+    },
+    {
+      "key": "api-key",
+      "description": "IronLicensing API key (sk_live_xxx) from /app/settings/api-keys",
+      "type": "secret",
+      "required": false,
+      "env_var": "IRONLICENSING_API_KEY",
+      "arg": "--api-key",
+      "prompt": "API key (or configure via add_account tool after connecting)"
+    },
+    {
+      "key": "base-url",
+      "description": "IronLicensing API base URL",
+      "type": "url",
+      "required": false,
+      "default": "http://localhost:5000",
+      "env_var": "IRONLICENSING_BASE_URL",
+      "arg": "--base-url",
+      "prompt": "API base URL"
+    }
+  ],
+  "scopes": ["global"],
+  "settings_template": {
+    "command": "ironlicensing-mcp",
+    "args": ["--profile", "${profile}"]
+  }
+}
