@@ -74,6 +74,28 @@ Same pattern as RSS feeds and OpenID. No central registry required.
 - [GitHub](examples/github.json) — npm install, secret token, global scope
 - [IronLicensing](examples/ironlicensing.json) — dotnet tool, custom registry, multi-account profiles
 
+## Badge
+
+Show that your MCP server supports manifest autodiscovery:
+
+```markdown
+[![MCP Manifest](https://mcp-manifest.dev/media/mcp-manifest-badge-light.svg)](https://mcp-manifest.dev)
+```
+
+[![MCP Manifest](media/mcp-manifest-badge-light.svg)](https://mcp-manifest.dev)
+
+## Media Kit
+
+Assets for referencing the spec in docs, READMEs, and blog posts:
+
+| File | Description |
+|------|-------------|
+| [mcp-manifest-icon.svg](media/mcp-manifest-icon.svg) | Source icon (SVG) |
+| [mcp-manifest-icon-256.png](media/mcp-manifest-icon-256.png) | Raster icon (256px PNG) |
+| [mcp-manifest-badge-light.svg](media/mcp-manifest-badge-light.svg) | "MCP manifest ready" badge (light) |
+| [mcp-manifest-badge-dark.svg](media/mcp-manifest-badge-dark.svg) | "MCP manifest ready" badge (dark) |
+| [favicon.ico](media/favicon.ico) | Favicon (16–256px, transparent corners) |
+
 ## Status
 
 **v0.1 — Draft.** The spec is functional and has a reference implementation. Feedback welcome via issues.
