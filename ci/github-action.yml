@@ -1,0 +1,25 @@
+# .github/workflows/validate-manifest.yml
+# Copy this file into your MCP server repo to validate mcp-manifest.json on every push.
+
+name: Validate MCP Manifest
+
+on:
+  push:
+    paths:
+      - 'mcp-manifest.json'
+  pull_request:
+    paths:
+      - 'mcp-manifest.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate manifest
+        run: npx mcp-manifest-validate ./mcp-manifest.json

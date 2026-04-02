@@ -1,0 +1,21 @@
+# .gitea/workflows/validate-manifest.yml
+# Copy this file into your MCP server repo to validate mcp-manifest.json on every push.
+
+name: Validate MCP Manifest
+
+on:
+  push:
+    paths:
+      - 'mcp-manifest.json'
+
+jobs:
+  validate:
+    runs-on: linux
+    steps:
+      - name: Checkout
+        run: |
+          git clone "${{ github.server_url }}/${{ github.repository }}.git" .
+          git checkout ${{ github.sha }}
+
+      - name: Validate manifest
+        run: npx mcp-manifest-validate ./mcp-manifest.json
