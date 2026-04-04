@@ -151,6 +151,27 @@
           "prompt": {
             "type": "string",
             "description": "Human-readable prompt for interactive setup"
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Static list of valid values. Clients SHOULD render as a dropdown."
+          },
+          "options_from": {
+            "type": "object",
+            "description": "Dynamically resolve available values from a local file.",
+            "required": ["file", "path"],
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "Path to a local JSON file. ~ is expanded to the user's home directory."
+              },
+              "path": {
+                "type": "string",
+                "description": "JSONPath expression to extract values from the file."
+              }
+            },
+            "additionalProperties": false
           }
         },
         "additionalProperties": false

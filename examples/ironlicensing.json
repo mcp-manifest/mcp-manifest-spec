@@ -30,7 +30,11 @@
       "type": "string",
       "required": false,
       "arg": "--profile",
-      "prompt": "Account profile (leave empty for default)"
+      "prompt": "Account profile (leave empty for default)",
+      "options_from": {
+        "file": "~/.ironlicensing/config.json",
+        "path": "$.accounts[*].name"
+      }
     },
     {
       "key": "api-key",

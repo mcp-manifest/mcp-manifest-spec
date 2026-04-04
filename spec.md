@@ -71,7 +71,12 @@ The manifest MUST be named `mcp-manifest.json` and SHOULD be placed at the root 
       "default": "any (optional) — default value",
       "env_var": "string (optional) — environment variable name that supplies this value",
       "arg": "string (optional) — CLI argument name (e.g. '--api-key')",
-      "prompt": "string (optional) — human-readable prompt for interactive setup"
+      "prompt": "string (optional) — human-readable prompt for interactive setup",
+      "options": ["string (optional) — static list of valid values"],
+      "options_from": {
+        "file": "string — path to a local JSON file (~ expanded to home directory)",
+        "path": "string — JSONPath expression to extract values from the file"
+      }
     }
   ],
 
@@ -134,6 +139,10 @@ Parameters the server accepts. Each entry describes one configuration value.
 - `url` — URL (clients may validate format)
 - `secret` — sensitive value like API key (clients SHOULD mask display, SHOULD NOT log)
 
+**Available values:** Config parameters can declare their valid values:
+- `options` — a static list of valid values. Clients SHOULD render these as a dropdown/picker.
+- `options_from` — dynamically read from a local file. The `file` field is a path (with `~` expanded to the user's home directory) and `path` is a JSONPath expression to extract values. Clients SHOULD resolve this at display time and render as a dropdown. If the file doesn't exist or the path yields no results, clients SHOULD fall back to free-text input.
+
 **Resolution order:** Clients SHOULD resolve config values in this order:
 1. User-provided value (via UI prompt or manual entry)
 2. Environment variable (`env_var` field)
@@ -186,7 +195,11 @@ A pre-built template for the client's MCP server configuration entry. Variables 
       "type": "string",
       "required": false,
       "arg": "--profile",
-      "prompt": "Account profile (leave empty for default)"
+      "prompt": "Account profile (leave empty for default)",
+      "options_from": {
+        "file": "~/.ironlicensing/config.json",
+        "path": "$.accounts[*].name"
+      }
     },
     {
       "key": "api-key",
@@ -262,7 +275,23 @@ MCP manifest autodiscovery follows the same pattern as RSS feed discovery — se
 
 Clients SHOULD support the following discovery methods, in priority order:
 
-#### 1. Well-Known URL
+#### 1. Installed Tool (`--manifest` flag)
+
+If the server command is already installed on the system, clients SHOULD try running it with the `--manifest` flag:
+
+```bash
+ironlicensing-mcp --manifest
+```
+
+The command MUST output the manifest JSON to stdout and exit with code 0. This is the **preferred discovery method** because:
+- It works offline — no network request needed
+- It works for private/internal servers with no website
+- The manifest can include runtime-resolved values (e.g., `options_from` with local files)
+- It guarantees the manifest matches the installed version
+
+Server authors SHOULD implement this flag. The output MUST be valid `mcp-manifest.json` content.
+
+#### 2. Well-Known URL
 
 Serve the manifest at a well-known path:
 
@@ -277,7 +306,7 @@ This is the preferred method for API servers and headless services that don't se
 - Return `Content-Type: application/json`
 - CORS headers SHOULD allow cross-origin requests (`Access-Control-Allow-Origin: *`)
 
-#### 2. HTML Link Tag
+#### 3. HTML Link Tag
 
 Add a `<link>` tag to the `<head>` of any page on the server author's website:
 
@@ -297,7 +326,7 @@ The `href` MAY be:
 <link rel="mcp-manifest" type="application/json" href="/mcp-manifests/licensing.json" title="Licensing Server" />
 ```
 
-#### 3. Direct URL
+#### 4. Direct URL
 
 A direct URL to the manifest file:
 
@@ -305,7 +334,7 @@ A direct URL to the manifest file:
 https://git.example.com/org/mcp-server/raw/branch/main/mcp-manifest.json
 ```
 
-#### 4. Local File
+#### 5. Local File
 
 A local file path to a manifest:
 
@@ -314,60 +343,70 @@ C:\path\to\mcp-manifest.json
 /home/user/projects/mcp-server/mcp-manifest.json
 ```
 
-#### 5. Installed Tool
-
-An installed tool that outputs its manifest:
-
-```bash
-ironlicensing-mcp --manifest
-```
-
 ### Client Resolution Algorithm
 
-When a user provides input (e.g., typing "ironlicensing.com" into an "Add MCP Server" field), clients SHOULD resolve the manifest using this algorithm:
+Clients SHOULD resolve manifests using this algorithm. The input may be a command name (for installed servers), a domain, URL, or file path.
 
 ```
-INPUT: user_input (could be domain, URL, or file path)
+INPUT: user_input (could be command, domain, URL, or file path)
 
-1. If user_input is a local file path and the file exists:
+1. If user_input is an installed command (on PATH):
+   → Run: {user_input} --manifest
+   - If exit code 0 with valid JSON manifest: Done.
+
+2. If user_input is a local file path and the file exists:
    → Parse as manifest JSON. Done.
 
-2. If user_input looks like a direct manifest URL (ends with .json):
+3. If user_input looks like a direct manifest URL (ends with .json):
    → Fetch and parse as manifest JSON. Done.
 
-3. Normalize to a base URL:
+4. Normalize to a base URL:
    - If no scheme, prepend "https://"
    - If no path, use root "/"
    → base_url
 
-4. Try well-known URL:
+5. Try well-known URL:
    → GET {base_url}/.well-known/mcp-manifest.json
    - If 200 with valid JSON manifest: Done.
 
-5. Fetch the HTML page:
+6. Fetch the HTML page:
    → GET {base_url}
    - Parse HTML for <link rel="mcp-manifest"> tags
    - If found: fetch the href URL, parse as manifest. Done.
 
-6. Discovery failed.
+7. Discovery failed.
    → Inform user that no manifest was found at the given location.
 ```
 
 ### Example: Full Discovery Flow
 
-A developer wants to add the IronLicensing MCP server. They type `ironlicensing.com` into their MCP client:
+**Scenario A: Server already installed**
 
-1. Client tries `https://ironlicensing.com/.well-known/mcp-manifest.json` → **200 OK**
-2. Parses the manifest: name="ironlicensing", install via dotnet-tool
-3. Checks if `ironlicensing-mcp` is on PATH → not found
+A developer has `ironlicensing-mcp` installed. Their MCP client detects the command and runs:
+
+1. `ironlicensing-mcp --manifest` → outputs manifest JSON
+2. Parses manifest: 3 config params (profile, api-key, base-url)
+3. `profile` has `options_from: { file: "~/.ironlicensing/config.json", path: "$.accounts[*].name" }`
+4. Client reads `~/.ironlicensing/config.json` → finds `["marketally_llc", "marketally_pte"]`
+5. Shows dropdown for profile with the two options
+6. User selects `marketally_pte` → generates args: `["--profile", "marketally_pte"]`
+
+Total user effort: select from dropdown. Everything else is automatic.
+
+**Scenario B: Server not installed**
+
+A developer types `ironlicensing.com` into their MCP client:
+
+1. `ironlicensing-mcp` not on PATH → skip `--manifest`
+2. Client tries `https://ironlicensing.com/.well-known/mcp-manifest.json` → **200 OK**
+3. Parses the manifest: name="ironlicensing", install via dotnet-tool
 4. Shows: "Install IronLicensing MCP? Run: `dotnet tool install -g IronLicensing.Mcp`"
 5. User confirms → tool installed
 6. Prompts for config: "API key (sk_live_xxx)" → user enters key
-7. Writes to `~/.claude/settings.json`:
+7. Writes to `~/.claude/.mcp.json`:
    ```json
    { "mcpServers": { "ironlicensing": { "command": "ironlicensing-mcp" } } }
    ```
-8. Verifies MCP handshake → success
 
 Total user effort: type domain name, enter API key. Everything else is automated.
 
