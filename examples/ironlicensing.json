@@ -1,5 +1,5 @@
 {
-  "$schema": "https://mcp-manifest.org/schema/v0.1.json",
+  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
   "version": "0.1",
   "server": {
     "name": "ironlicensing",
@@ -10,6 +10,7 @@
     "homepage": "https://www.ironlicensing.com",
     "repository": "https://git.marketally.com/IronServices/ironlicensing-mcp",
     "license": "MIT",
+    "icon": "https://www.ironlicensing.com/favicon.svg",
     "keywords": ["licensing", "saas", "product-management", "analytics", "tiers", "features"]
   },
   "install": [

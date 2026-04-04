@@ -45,6 +45,7 @@ The manifest MUST be named `mcp-manifest.json` and SHOULD be placed at the root 
     "homepage": "string (optional) — URL to project homepage",
     "repository": "string (optional) — URL to source repository",
     "license": "string (optional) — SPDX license identifier",
+    "icon": "string (optional) — URL to the server's icon (square, PNG or SVG)",
     "keywords": ["string (optional) — discovery tags"]
   },
 
@@ -91,6 +92,8 @@ The manifest MUST be named `mcp-manifest.json` and SHOULD be placed at the root 
 #### `server` (required)
 
 Metadata about the MCP server. The `name` field is the canonical identifier used in client configuration (e.g., the key in `mcpServers`).
+
+The `icon` field is a URL to the server's icon (square, PNG or SVG recommended, minimum 64x64). Clients SHOULD display this icon alongside the server name. When absent, clients SHOULD fall back to a default MCP icon.
 
 #### `install` (required, array)
 
@@ -163,6 +166,7 @@ A pre-built template for the client's MCP server configuration entry. Variables 
     "homepage": "https://www.ironlicensing.com",
     "repository": "https://git.marketally.com/IronServices/ironlicensing-mcp",
     "license": "MIT",
+    "icon": "https://www.ironlicensing.com/favicon.svg",
     "keywords": ["licensing", "saas", "product-management", "analytics"]
   },
   "install": [

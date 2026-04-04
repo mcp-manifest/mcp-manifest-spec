@@ -55,6 +55,11 @@
           "type": "string",
           "description": "SPDX license identifier"
         },
+        "icon": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the server's icon (square, PNG or SVG recommended). Clients SHOULD fall back to a default MCP icon when absent."
+        },
         "keywords": {
           "type": "array",
           "items": { "type": "string" },
