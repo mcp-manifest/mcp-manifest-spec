@@ -1,5 +1,7 @@
 # mcp-manifest specification
 
+_A specification by MarketAlly_
+
 A machine-readable manifest format for [MCP](https://modelcontextprotocol.io) servers — enabling autodiscovery, one-click installation, and zero-config client setup.
 
 ## The Problem
@@ -100,6 +102,36 @@ Assets for referencing the spec in docs, READMEs, and blog posts:
 
 **v0.1 — Draft.** The spec is functional and has a reference implementation. Feedback welcome via issues.
 
-## License
+## Licensing Model
 
-CC0 1.0 — Public domain. Use it however you want.
+The mcp-manifest specification text is released under the [Community Specification 
+License 1.0 (Patent and Copyright)](https://github.com/CommunitySpecification/1.0).
+Reference implementations, schemas, and tooling are released under the Apache 2.0 License.
+The specification is fully implementable without reliance on any specific implementation.
+
+Contributions to this specification are accepted under the same Community 
+Specification License 1.0 terms. By submitting a contribution, you agree to 
+the copyright and patent grants defined therein.
+
+## Document Metadata
+- Author: David H Friedel Jr.
+- Copyright: © 2026 David H Friedel Jr.
+- First Published: 2026-03-20
+- Affiliated with: MarketAlly (https://marketally.ai)
+- **Specification**: mcp-manifest  
+- **Version**: v0.1 (Draft)  
+- **Status**: Public Draft  
+
+David H Friedel Jr. is the current copyright holder of this specification. 
+The MarketAlly group includes MarketAlly LLC (USA), MarketAlly Pte Ltd 
+(Singapore), and MarketAlly OÜ (Estonia). This specification is being 
+prepared for assignment to a MarketAlly entity; until that assignment is 
+in place, copyright remains with the individual author.
+
+mcp-manifest wraps installation, configuration, and discovery metadata 
+around servers built on Anthropic's Model Context Protocol (MCP). MCP itself 
+is Anthropic's protocol; the mcp-manifest format is a separate specification 
+that complements it.
+
+"mcp-manifest", "ADP", "ACB", "ADJ", and "Agent Registry" are trademarks of 
+MarketAlly. The specifications are openly licensed; the names are not.
