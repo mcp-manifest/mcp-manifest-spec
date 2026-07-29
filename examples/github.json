@@ -1,6 +1,6 @@
 {
-  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
-  "version": "0.1",
+  "$schema": "https://mcp-manifest.dev/schema/v1.0.json",
+  "version": "1.0",
   "server": {
     "name": "github",
     "displayName": "GitHub",
@@ -29,7 +29,9 @@
       "type": "secret",
       "required": true,
       "env_var": "GITHUB_TOKEN",
-      "prompt": "GitHub personal access token (ghp_...)"
+      "prompt": "GitHub personal access token (ghp_...)",
+      "secret_target": "api.github.com",
+      "secret_scope_url": "https://api.github.com/*"
     }
   ],
   "scopes": ["global"],

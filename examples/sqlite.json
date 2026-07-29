@@ -1,6 +1,6 @@
 {
-  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
-  "version": "0.1",
+  "$schema": "https://mcp-manifest.dev/schema/v1.0.json",
+  "version": "1.0",
   "server": {
     "name": "sqlite",
     "displayName": "SQLite Explorer",

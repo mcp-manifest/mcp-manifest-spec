@@ -1,6 +1,6 @@
 {
-  "$schema": "https://mcp-manifest.dev/schema/v0.1.json",
-  "version": "0.1",
+  "$schema": "https://mcp-manifest.dev/schema/v1.0.json",
+  "version": "1.0",
   "server": {
     "name": "ironlicensing",
     "displayName": "IronLicensing",
@@ -17,7 +17,7 @@
     {
       "method": "dotnet-tool",
       "package": "IronLicensing.Mcp",
-      "source": "https://git.marketally.com/api/packages/ironservices/nuget/index.json",
+      "registry": "https://git.marketally.com/api/packages/ironservices/nuget/index.json",
       "command": "ironlicensing-mcp",
       "priority": 0
     }
@@ -43,14 +43,16 @@
       "required": false,
       "env_var": "IRONLICENSING_API_KEY",
       "arg": "--api-key",
-      "prompt": "API key (or configure via add_account tool after connecting)"
+      "prompt": "API key (or configure via add_account tool after connecting)",
+      "secret_target": "api.ironlicensing.com",
+      "secret_scope_url": "https://api.ironlicensing.com/*"
     },
     {
       "key": "base-url",
       "description": "IronLicensing API base URL",
       "type": "url",
       "required": false,
-      "default": "http://localhost:5000",
+      "default": "https://api.ironlicensing.com",
       "env_var": "IRONLICENSING_BASE_URL",
       "arg": "--base-url",
       "prompt": "API base URL"
@@ -60,5 +62,7 @@
   "settings_template": {
     "command": "ironlicensing-mcp",
     "args": ["--profile", "${profile}"]
-  }
+  },
+  "update_policy": "ask",
+  "changelog_url": "https://www.ironlicensing.com/mcp/changelog"
 }

@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mcp-manifest.dev/schema/v1.0.json",
+  "title": "MCP Manifest v1.0",
+  "description": "Machine-readable manifest for MCP (Model Context Protocol) servers. Describes installation, configuration, client wiring, signing, and security constraints. See spec.md and THREAT-MODEL.md for the full specification.",
+  "type": "object",
+  "required": ["version", "server", "install", "transport"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "description": "Spec version",
+      "enum": ["1.0"]
+    },
+    "server": {
+      "type": "object",
+      "description": "Server metadata",
+      "required": ["name", "displayName", "description", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier, lowercase, hyphens allowed",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name"
+        },
+        "description": {
+          "type": "string",
+          "description": "One-line description"
+        },
+        "version": {
+          "type": "string",
+          "description": "Server version (semver)"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author or organization"
+        },
+        "homepage": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to project homepage"
+        },
+        "repository": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to source repository"
+        },
+        "license": {
+          "type": "string",
+          "description": "SPDX license identifier"
+        },
+        "icon": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the server's icon (square, PNG or SVG recommended). Clients SHOULD fall back to a default MCP icon when absent."
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Discovery tags"
+        }
+      },
+      "additionalProperties": false
+    },
+    "install": {
+      "type": "array",
+      "description": "Installation methods, ordered by priority (lower = preferred)",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["method", "package", "command"],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["dotnet-tool", "npm", "pip", "cargo", "gem", "prebuilt-binary", "docker"],
+            "description": "Installation method (closed enum — T2)"
+          },
+          "package": {
+            "type": "string",
+            "description": "Package name or image"
+          },
+          "registry": {
+            "type": "string",
+            "description": "Explicit registry origin URL. RECOMMENDED for non-default registries; clients MUST display this to the user. (T2)"
+          },
+          "command": {
+            "type": "string",
+            "description": "CLI command name after installation. MUST NOT contain shell metacharacters (T2).",
+            "pattern": "^[^;|&$()`\\n\\r\\t<>'\"\\\\]+$"
+          },
+          "checksum": {
+            "type": "string",
+            "description": "SHA-256 checksum of the binary, format 'sha256:HEX'. REQUIRED when method='prebuilt-binary' (T2).",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "priority": {
+            "type": "integer",
+            "default": 0,
+            "description": "Lower = preferred"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "method": { "const": "prebuilt-binary" } }
+            },
+            "then": {
+              "required": ["checksum"]
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
+    "transport": {
+      "type": "string",
+      "enum": ["stdio", "sse", "streamable-http"],
+      "description": "How the client connects to this server"
+    },
+    "endpoint": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL for sse/streamable-http transports"
+    },
+    "config": {
+      "type": "array",
+      "description": "Configuration parameters the server accepts",
+      "items": {
+        "type": "object",
+        "required": ["key", "description", "type"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Parameter name"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this parameter does"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["string", "boolean", "number", "path", "url", "secret"],
+            "description": "Value type"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether this parameter is required"
+          },
+          "default": {
+            "description": "Default value"
+          },
+          "env_var": {
+            "type": "string",
+            "description": "Environment variable name that supplies this value"
+          },
+          "arg": {
+            "type": "string",
+            "description": "CLI argument name (e.g. '--api-key')"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Human-readable prompt for interactive setup"
+          },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Static list of valid values. Clients SHOULD render as a dropdown."
+          },
+          "options_from": {
+            "type": "object",
+            "description": "Dynamically resolve available values from a local file.",
+            "required": ["file", "path"],
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "Path to a local JSON file. ~ is expanded to the user's home directory."
+              },
+              "path": {
+                "type": "string",
+                "description": "JSONPath expression to extract values from the file."
+              }
+            },
+            "additionalProperties": false
+          },
+          "secret_target": {
+            "type": "string",
+            "description": "Intended recipient origin where the secret will be transmitted (e.g., 'api.openai.com'). REQUIRED when type='secret'. (T3)"
+          },
+          "secret_scope_url": {
+            "type": "string",
+            "description": "URL pattern this secret may be sent to. Optional; clients MAY refuse out-of-scope transmissions. (T3)"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "type": { "const": "secret" } }
+            },
+            "then": {
+              "required": ["secret_target"]
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["global", "project", "both"]
+      },
+      "description": "Where this server is typically configured"
+    },
+    "settings_template": {
+      "type": "object",
+      "description": "Pre-built template for client MCP server configuration. Variables use ${key} syntax.",
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "update_policy": {
+      "type": "string",
+      "enum": ["auto", "manual", "ask"],
+      "default": "manual",
+      "description": "How clients should handle updates to this manifest. Default 'manual'. RECOMMENDED 'manual' for manifests with secrets or non-default registries. (T4)"
+    },
+    "changelog_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to a human-readable changelog displayed during update prompts. (T4)"
+    },
+    "signature": {
+      "type": "object",
+      "description": "Cryptographic signature over the canonicalized manifest by the publisher's key. See spec.md §Signing and Verification. (T1)",
+      "required": ["alg", "key_id", "value"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["Ed25519"],
+          "description": "Signature algorithm. Ed25519 is the only currently-defined value."
+        },
+        "key_id": {
+          "type": "string",
+          "description": "Opaque identifier for the publisher's signing key (used to look up the public key)."
+        },
+        "value": {
+          "type": "string",
+          "description": "Base64url-encoded signature over JCS(manifest with signature field removed). Ed25519 signatures are 64 bytes → 86 characters base64url unpadded.",
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Reserved object for vendor-specific or experimental data. Field names MUST start with 'x-'. Clients MUST ignore extensions they don't recognize. (T5)",
+      "patternProperties": {
+        "^x-[a-z0-9-]+$": {}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

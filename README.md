@@ -100,7 +100,7 @@ Assets for referencing the spec in docs, READMEs, and blog posts:
 
 ## Status
 
-**v0.1 — Draft.** The spec is functional and has a reference implementation. Feedback welcome via issues.
+**v1.0 — Stable.** The spec is hardened against the threats enumerated in [THREAT-MODEL.md](./THREAT-MODEL.md) and has reference implementations in C#, Python, and TypeScript. Breaking changes require a 2.0.
 
 ## Licensing Model
 
@@ -122,11 +122,10 @@ the copyright and patent grants defined therein.
 - **Version**: v0.1 (Draft)  
 - **Status**: Public Draft  
 
-David H Friedel Jr. is the current copyright holder of this specification. 
-The MarketAlly group includes MarketAlly LLC (USA), MarketAlly Pte Ltd 
-(Singapore), and MarketAlly OÜ (Estonia). This specification is being 
-prepared for assignment to a MarketAlly entity; until that assignment is 
-in place, copyright remains with the individual author.
+David H Friedel Jr. is the copyright holder of this specification. The 
+MarketAlly group — MarketAlly LLC (USA), MarketAlly Pte Ltd (Singapore), 
+and MarketAlly OÜ (Estonia) — operates under non-exclusive licenses from 
+the author to use, implement, and commercialize the specification.
 
 mcp-manifest wraps installation, configuration, and discovery metadata 
 around servers built on Anthropic's Model Context Protocol (MCP). MCP itself 
